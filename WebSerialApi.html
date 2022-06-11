@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSerialApi-DEMO</title>
+  <style>
+    button {
+      width: 120px;
+      height: 60px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="selectPort">选择串口</button>
+  <button class="sendBtn">发送数据</button>
+  <div>
+    <textarea cols="100" rows="16"></textarea>
+  </div>
+
+
+  <script type="module">
+    import WebSerialApi from './WebSerialApi.js';
+    let port;
+
+    let textarea = document.querySelector('textarea');
+
+    if ("serial" in navigator) {
+      // 获取要通讯的串口
+      const selectPort = document.querySelector('.selectPort');
+      selectPort.addEventListener('click', async function () {
+        port = await navigator.serial.requestPort();
+      });
+
+      // 向串口发送数据，并接收返回数据
+      const sendBtn = document.querySelector('.sendBtn');
+      sendBtn.addEventListener('click', async function () {
+        try {
+
+          let sendStr = 'FEFEFEFE68AAAAAAAAAAAA681300DF16';
+          textarea.value += '\r\n' + '发送报文：' + sendStr + '\r\n';
+          // 发送数据
+          await WebSerialApi.sendFrame(port, sendStr);
+          // 接收数据
+          let receiveStr = await WebSerialApi.receiveFrame(port);
+          textarea.value += '接收报文：' + receiveStr + '\r\n';
+          textarea.scrollTop = textarea.scrollHeight;
+        } catch (e) {
+          console.log(e);
+        }
+      });
+    } else {
+      alert('您的浏览器暂时不支持串口通讯！');
+    }
+
+  </script>
+
+</body>
+
+</html>
