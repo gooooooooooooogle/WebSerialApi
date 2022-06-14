@@ -18,6 +18,7 @@
 
   <button class="selectPort">选择串口</button>
   <button class="sendBtn">发送数据</button>
+  <button class="forSendBtn">循环10次</button>
   <div>
     <textarea cols="100" rows="16"></textarea>
   </div>
@@ -40,15 +41,41 @@
       const sendBtn = document.querySelector('.sendBtn');
       sendBtn.addEventListener('click', async function () {
         try {
+          if (port) {
+            let sendStr = 'FEFEFEFE68AAAAAAAAAAAA681300DF16';
+            textarea.value += '\r\n' + '发送报文：' + sendStr + '\r\n';
+            // 发送数据
+            await WebSerialApi.sendFrame(port, sendStr);
+            // 接收数据
+            let receiveStr = await WebSerialApi.receiveFrame(port);
+            textarea.value += '接收报文：' + receiveStr + '\r\n';
+            textarea.scrollTop = textarea.scrollHeight;
+          } else {
+            alert('请先选择串口！');
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
 
-          let sendStr = 'FEFEFEFE68AAAAAAAAAAAA681300DF16';
-          textarea.value += '\r\n' + '发送报文：' + sendStr + '\r\n';
-          // 发送数据
-          await WebSerialApi.sendFrame(port, sendStr);
-          // 接收数据
-          let receiveStr = await WebSerialApi.receiveFrame(port);
-          textarea.value += '接收报文：' + receiveStr + '\r\n';
-          textarea.scrollTop = textarea.scrollHeight;
+      // 循环发送接收
+      const forSendBtn = document.querySelector('.forSendBtn');
+      forSendBtn.addEventListener('click', async function () {
+        try {
+          if (port) {
+            for (let index = 0; index < 10; index++) {
+              let sendStr = 'FEFEFEFE68AAAAAAAAAAAA681300DF16';
+              textarea.value += '\r\n' + '发送报文：' + sendStr + '\r\n';
+              // 发送数据
+              await WebSerialApi.sendFrame(port, sendStr);
+              // 接收数据
+              let receiveStr = await WebSerialApi.receiveFrame(port);
+              textarea.value += '接收报文：' + receiveStr + '\r\n';
+              textarea.scrollTop = textarea.scrollHeight;
+            }
+          } else {
+            alert('请先选择串口！');
+          }
         } catch (e) {
           console.log(e);
         }

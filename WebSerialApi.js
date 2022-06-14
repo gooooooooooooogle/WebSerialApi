@@ -55,14 +55,14 @@ export default {
             // 正常处理
             if (receiveStr.substr(receiveStr.length - 2, 2) == '16') {
               clearTimeout(time);
-              this.stopReceiveAndClosePort(port);
+              await this.stopReceiveAndClosePort(port);
               return receiveStr;
             }
           }
         }
         // 超时处理
         clearTimeout(time);
-        this.stopReceiveAndClosePort(port);
+        await this.stopReceiveAndClosePort(port);
         return receiveStr;
 
       } catch (error) {
